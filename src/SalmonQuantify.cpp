@@ -834,6 +834,8 @@ void processReadsQuasi(
   bool writeQuasimappings = (qmLog != nullptr);
 
   auto rg = parser->getReadGroup();
+
+  int tooShort = 0;
   while (parser->refill(rg)) {
       rangeSize = rg.size();
 
@@ -898,6 +900,8 @@ void processReadsQuasi(
           jointHitGroup.clearAlignments();
         }
       }
+
+      salmonOpts.duckLog->info("jointHits: {0}", jointHits.size());
 
       // NOTE: This will currently not work with "strict intersect", i.e.
       // nothing will be output here with strict intersect.
@@ -1487,6 +1491,7 @@ void processReadLibrary(
         // NOTE: we *must* capture i by value here, b/c it can (sometimes, does)
         // change value before the lambda below is evaluated --- crazy!
         if (largeIndex) {
+          // 
           if (perfectHashIndex) { // Perfect Hash
               if (salmonOpts.qmFileName != "" and i == 0) {
                   rapmap::utils::writeSAMHeader(*(sidx->quasiIndexPerfectHash64()), salmonOpts.qmLog);
@@ -2529,6 +2534,12 @@ transcript abundance from RNA-seq reads
     auto jointLog = sopt.jointLog;
     auto indexDirectory = sopt.indexDirectory;
     auto outputDirectory = sopt.outputDirectory;
+
+    bfs::path logPath = indexDirectory / "DuckQuantify.log";
+
+    auto fileSink = std::make_shared<spdlog::sinks::simple_file_sink_mt>(logPath.string(), true);
+    sopt.duckLog = spdlog::create("duckLog", {fileSink});
+    
     bool greedyChain = true;
 
     jointLog->info("parsing read library format");

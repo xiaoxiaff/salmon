@@ -196,6 +196,8 @@ struct SalmonOpts {
     std::shared_ptr<spdlog::logger> jointLog{nullptr};
     std::shared_ptr<spdlog::logger> fileLog{nullptr};
 
+    std::shared_ptr<spdlog::logger> duckLog{nullptr};
+
     // Related to caching and threading
     uint32_t mappingCacheMemoryLimit;
     uint32_t numThreads;
